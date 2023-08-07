@@ -5,76 +5,32 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.7</version>
+		<version>3.1.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.pig4cloud.plugin</groupId>
-	<artifactId>ureport-spring-boot-starter</artifactId>
-	<version>0.0.2</version>
-	<name>ureport-spring-boot-starter</name>
-	<description>ureport spring boot 插件</description>
+	<artifactId>rocketmq-spring-boot3-starter</artifactId>
+	<version>2.2.3</version>
+	<name>rocketmq-spring-boot-starter</name>
+	<description>rocketmq spring boot 3 插件</description>
 
 	<properties>
-		<java.version>1.8</java.version>
-		<ureport.version>2.2.9</ureport.version>
-		<oss.version>1.0.5</oss.version>
-		<mica.version>2.2.2</mica.version>
-		<spring.checkstyle.plugin>0.0.29</spring.checkstyle.plugin>
+		<java.version>17</java.version>
+		<mica.version>3.1.0</mica.version>
 	</properties>
 
 	<dependencies>
-		<!--ureport-->
 		<dependency>
-			<groupId>com.bstek.ureport</groupId>
-			<artifactId>ureport2-console</artifactId>
-			<version>${ureport.version}</version>
-		</dependency>
-
-		<!--web context-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- mica-auto -->
-		<dependency>
-			<groupId>net.dreamlu</groupId>
-			<artifactId>mica-auto</artifactId>
-			<version>${mica.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!--oss-->
-		<dependency>
-			<groupId>com.pig4cloud.plugin</groupId>
-			<artifactId>oss-spring-boot-starter</artifactId>
-			<version>${oss.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!--lombok-->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
+			<groupId>org.apache.rocketmq</groupId>
+			<artifactId>rocketmq-spring-boot-starter</artifactId>
+			<version>2.2.3</version>
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<!--代码格式插件，默认使用spring 规则-->
-			<plugin>
-				<groupId>io.spring.javaformat</groupId>
-				<artifactId>spring-javaformat-maven-plugin</artifactId>
-				<version>${spring.checkstyle.plugin}</version>
-			</plugin>
-		</plugins>
-	</build>
 
 	<profiles>
 		<profile>
-			<id>release</id>
+			<id>snapshot</id>
 			<build>
 				<plugins>
 					<!-- Source -->
@@ -95,14 +51,14 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9.1</version>
+						<version>3.3.2</version>
 						<configuration>
 							<show>private</show>
 							<nohelp>true</nohelp>
 							<charset>UTF-8</charset>
 							<encoding>UTF-8</encoding>
 							<docencoding>UTF-8</docencoding>
-							<additionalparam>-Xdoclint:none</additionalparam>
+							<doclint>none</doclint>
 							<detectJavaApiLink>false</detectJavaApiLink>
 						</configuration>
 						<executions>
@@ -138,7 +94,7 @@
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.8</version>
+						<version>1.6.13</version>
 						<extensions>true</extensions>
 						<configuration>
 							<serverId>sonatype</serverId>
@@ -155,6 +111,84 @@
 						https://oss.sonatype.org/content/repositories/snapshots/
 					</url>
 				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<!-- Source -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- Javadoc -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.3.2</version>
+						<configuration>
+							<show>private</show>
+							<nohelp>true</nohelp>
+							<charset>UTF-8</charset>
+							<encoding>UTF-8</encoding>
+							<docencoding>UTF-8</docencoding>
+							<doclint>none</doclint>
+							<detectJavaApiLink>false</detectJavaApiLink>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- GPG -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<gpgArguments>
+								<arg>--pinentry-mode</arg>
+								<arg>loopback</arg>
+							</gpgArguments>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.13</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>sonatype</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<distributionManagement>
 				<repository>
 					<id>sonatype</id>
 					<url>
@@ -164,5 +198,4 @@
 			</distributionManagement>
 		</profile>
 	</profiles>
-
 </project>
